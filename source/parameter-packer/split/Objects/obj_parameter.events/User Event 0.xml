@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<event category="OTHER" id="10">
+  <actions>
+    <action id="605" library="1">
+      <!--action name: Comment-->
+      <kind>NORMAL</kind>
+      <allowRelative>false</allowRelative>
+      <question>false</question>
+      <canApplyTo>false</canApplyTo>
+      <actionType>NONE</actionType>
+      <functionName/>
+      <relative>false</relative>
+      <not>false</not>
+      <appliesTo>.self</appliesTo>
+      <arguments>
+        <argument kind="STRING">Packing</argument>
+      </arguments>
+    </action>
+    <action id="603" library="1">
+      <!--action name: Code-->
+      <kind>CODE</kind>
+      <allowRelative>false</allowRelative>
+      <question>false</question>
+      <canApplyTo>true</canApplyTo>
+      <actionType>CODE</actionType>
+      <functionName/>
+      <relative>false</relative>
+      <not>false</not>
+      <appliesTo>.self</appliesTo>
+      <arguments>
+        <argument kind="STRING">if(para_path!="" and data_path!="")
+{
+    data_file = file_bin_open(data_path, 2)
+    file_bin_seek(data_file, 0)
+    
+    //Parameter Pos Seek
+    para_pos = -1
+    piece_string = ""
+    find_array[255] = 0
+    for(i=1; i&lt;=string_length(find_string); i+=1)
+    {
+        find_array[i-1] = ord(string_copy(find_string, i, 1))
+    }
+    repeat(file_bin_size(data_file))
+    {
+        byte = file_bin_read_byte(data_file)
+        if(byte == find_array[string_length(piece_string)])
+        {
+            piece_string += chr(byte)
+            if(string_length(piece_string) == string_length(find_string))
+            {
+                para_pos = file_bin_position(data_file)-string_length(find_string)-8
+                break
+            }
+        }
+        else if(string_length(piece_string)&gt;0)
+        {
+            piece_string = ""
+        }
+    }
+    if(para_pos != -1)
+    {
+        file_bin_seek(data_file, para_pos)
+        para_path = string_copy(para_path, 1, string_length(para_path)-5)
+        for(i=1; i&lt;=8; i+=1)
+        {
+            if(!file_exists(para_path+string(i)+".txt"))
+            {
+                wd_message_simple(para_path+string(i)+".txt"+" does not exist!")
+            }
+            para_file = file_text_open_read(para_path+string(i)+".txt")
+            repeat(123)
+            {
+                queue = ds_queue_create()
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, scr_para_read(para_file))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, scr_para_read(para_file))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, scr_para_read(para_file))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                ds_queue_enqueue(queue, real(scr_para_read(para_file)))
+                file_bin_write_int(data_file, ds_queue_dequeue(queue))
+                file_bin_write_int(data_file, ds_queue_dequeue(queue))
+                file_bin_write_char(data_file, ds_queue_dequeue(queue), 100)
+                file_bin_write_int(data_file, ds_queue_dequeue(queue))
+                file_bin_write_int(data_file, ds_queue_dequeue(queue))
+                file_bin_write_int(data_file, ds_queue_dequeue(queue))
+                file_bin_write_short(data_file, ds_queue_dequeue(queue))
+                file_bin_write_short(data_file, ds_queue_dequeue(queue))
+                file_bin_write_short(data_file, ds_queue_dequeue(queue))
+                file_bin_write_char(data_file, ds_queue_dequeue(queue), 20)
+                file_bin_write_int(data_file, ds_queue_dequeue(queue))
+                file_bin_write_int(data_file, ds_queue_dequeue(queue))
+                file_bin_write_int(data_file, ds_queue_dequeue(queue))
+                file_bin_write_char(data_file, ds_queue_dequeue(queue), 20)
+                file_bin_write_int(data_file, ds_queue_dequeue(queue))
+                file_bin_write_int(data_file, ds_queue_dequeue(queue))
+                file_bin_write_int(data_file, ds_queue_dequeue(queue))
+                file_bin_write_int(data_file, ds_queue_dequeue(queue))
+                file_text_readln(para_file)
+                ds_queue_destroy(queue)
+            }
+            repeat(1856/4/8)
+            {
+                str = file_text_read_string(para_file)
+                str = string_replace_all(str, "    ", " ")
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 0)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 1)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 2)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 3)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 4)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 5)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 6)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 7)))
+                file_text_readln(para_file)
+            }
+            file_text_readln(para_file)
+            repeat(1152/4/9)
+            {
+                str = file_text_read_string(para_file)
+                str = string_replace_all(str, "    ", " ")
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 0)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 1)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 2)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 3)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 4)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 5)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 6)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 7)))
+                file_bin_write_int(data_file, real(scr_string_strip_at(str, " ", 8)))
+                file_text_readln(para_file)
+            }
+            
+            file_text_close(para_file)
+        }
+        if(done_message){wd_message_simple("DATA Packing is Complete!")}
+    }
+    else
+    {
+        wd_message_simple("Can't Found "+find_string+" String!")
+    }
+    
+    file_bin_close(data_file)
+}
+else
+{
+    wd_message_simple("Path Error!")
+}
+</argument>
+      </arguments>
+    </action>
+  </actions>
+</event>

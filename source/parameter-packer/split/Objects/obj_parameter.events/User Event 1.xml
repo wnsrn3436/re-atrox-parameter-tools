@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<event category="OTHER" id="11">
+  <actions>
+    <action id="605" library="1">
+      <!--action name: Comment-->
+      <kind>NORMAL</kind>
+      <allowRelative>false</allowRelative>
+      <question>false</question>
+      <canApplyTo>false</canApplyTo>
+      <actionType>NONE</actionType>
+      <functionName/>
+      <relative>false</relative>
+      <not>false</not>
+      <appliesTo>.self</appliesTo>
+      <arguments>
+        <argument kind="STRING">UnPacking</argument>
+      </arguments>
+    </action>
+    <action id="603" library="1">
+      <!--action name: Code-->
+      <kind>CODE</kind>
+      <allowRelative>false</allowRelative>
+      <question>false</question>
+      <canApplyTo>true</canApplyTo>
+      <actionType>CODE</actionType>
+      <functionName/>
+      <relative>false</relative>
+      <not>false</not>
+      <appliesTo>.self</appliesTo>
+      <arguments>
+        <argument kind="STRING">if(data_path!="")
+{
+    data_file = file_bin_open(data_path, 0)
+    
+    //Parameter Pos Seek
+    para_pos = -1
+    piece_string = ""
+    find_array[255] = 0
+    for(i=1; i&lt;=string_length(find_string); i+=1)
+    {
+        find_array[i-1] = ord(string_copy(find_string, i, 1))
+    }
+    repeat(file_bin_size(data_file))
+    {
+        byte = file_bin_read_byte(data_file)
+        if(byte == find_array[string_length(piece_string)])
+        {
+            piece_string += chr(byte)
+            if(string_length(piece_string) == string_length(find_string))
+            {
+                para_pos = file_bin_position(data_file)-string_length(find_string)-8
+                break
+            }
+        }
+        else if(string_length(piece_string)&gt;0)
+        {
+            piece_string = ""
+        }
+    }
+    if(para_pos != -1)
+    {
+        file_bin_seek(data_file, para_pos)
+        for(i=1; i&lt;=8; i+=1)
+        {
+            para_path = filename_change_ext(data_path, "")+"_parameter"+string(i)+".txt"
+            file_delete(para_path)
+            para_file = file_text_open_write(para_path)
+            repeat(123)
+            {
+                file_text_write_string(para_file, "기본설정    "+string(file_bin_read_int(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "기본이름    "+string(file_bin_read_int(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "이름        "+file_bin_read_char(data_file, 100)); file_text_writeln(para_file)
+                file_text_write_string(para_file, "체력        "+string(file_bin_read_int(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "장갑        "+string(file_bin_read_int(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "방어력      "+string(file_bin_read_int(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "시간        "+string(file_bin_read_short(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "뮤온        "+string(file_bin_read_short(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "쿼크        "+string(file_bin_read_short(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "대지공격    "+file_bin_read_char(data_file, 20)); file_text_writeln(para_file)
+                file_text_write_string(para_file, "대지기본    "+string(file_bin_read_int(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "대지추가    "+string(file_bin_read_int(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "대지히트    "+string(file_bin_read_int(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "대공공격    "+file_bin_read_char(data_file, 20)); file_text_writeln(para_file)
+                file_text_write_string(para_file, "대공기본    "+string(file_bin_read_int(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "대공추가    "+string(file_bin_read_int(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "대공히트    "+string(file_bin_read_int(data_file))); file_text_writeln(para_file)
+                file_text_write_string(para_file, "맵에등장    "+string(file_bin_read_int(data_file))); file_text_writeln(para_file)
+                file_text_writeln(para_file)
+            }
+            repeat(1856/4/8)
+            {
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file)));
+                file_text_writeln(para_file)
+            }
+            file_text_writeln(para_file)
+            repeat(1152/4/9)
+            {
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file))+"    ");
+                file_text_write_string(para_file, string(file_bin_read_int(data_file)));
+                file_text_writeln(para_file)
+            }
+            file_text_close(para_file)
+        }
+        if(done_message){wd_message_simple("DATA UnPacking is Complete!")}
+    }
+    else
+    {
+        wd_message_simple("Can't Found "+find_string+" String!")
+    }
+    
+    file_bin_close(data_file)
+}
+else
+{
+    wd_message_simple("DATA Path Error!")
+}
+</argument>
+      </arguments>
+    </action>
+  </actions>
+</event>

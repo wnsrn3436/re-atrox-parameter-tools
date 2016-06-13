@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<event category="OTHER" id="11">
+  <actions>
+    <action id="605" library="1">
+      <!--action name: Comment-->
+      <kind>NORMAL</kind>
+      <allowRelative>false</allowRelative>
+      <question>false</question>
+      <canApplyTo>false</canApplyTo>
+      <actionType>NONE</actionType>
+      <functionName/>
+      <relative>false</relative>
+      <not>false</not>
+      <appliesTo>.self</appliesTo>
+      <arguments>
+        <argument kind="STRING">UnPacking</argument>
+      </arguments>
+    </action>
+    <action id="603" library="1">
+      <!--action name: Code-->
+      <kind>CODE</kind>
+      <allowRelative>false</allowRelative>
+      <question>false</question>
+      <canApplyTo>true</canApplyTo>
+      <actionType>CODE</actionType>
+      <functionName/>
+      <relative>false</relative>
+      <not>false</not>
+      <appliesTo>.self</appliesTo>
+      <arguments>
+        <argument kind="STRING">if(spm_path!="")
+{
+    spm_file = file_bin_open(spm_path, 0)
+    
+    //Static Size
+    file_bin_seek(spm_file, 1130)
+    
+    //Win &amp; Lose
+    length = file_bin_read_int(spm_file)
+    file_bin_seek(spm_file, file_bin_position(spm_file)+length) //Win
+    length = file_bin_read_int(spm_file)
+    file_bin_seek(spm_file, file_bin_position(spm_file)+length) //Lose
+    
+    //Briefing
+    max_number = file_bin_read_int(spm_file)
+    repeat(max_number)
+    {
+        type = file_bin_read_short(spm_file)
+        number = file_bin_read_int(spm_file)
+        repeat(number)
+        {
+            string_number = file_bin_read_byte(spm_file)
+            repeat(string_number+1)
+            {
+                length = file_bin_read_int(spm_file)
+                file_bin_seek(spm_file, file_bin_position(spm_file)+length)
+            }
+        }
+    }
+    
+    //LZH
+    lh5_start = file_bin_position(spm_file)
+    lh5_size = file_bin_size(spm_file) - lh5_start
+    
+    file_bin_seek(spm_file, lh5_start+2)
+    lh5 = file_bin_read_char(spm_file, 5)
+    if(lh5=="-lh5-")
+    {
+        file_bin_seek(spm_file, file_bin_position(spm_file)+14)
+        extract_name = filename_name(file_bin_read_char(spm_file, file_bin_read_byte(spm_file)))
+        
+        //Make LZH
+        lh5_path = filename_change_ext(spm_path, "")+".lzh"
+        file_delete(lh5_path)
+        lh5_file = file_bin_open(lh5_path, 1)
+        file_bin_seek(spm_file, lh5_start)
+        repeat(lh5_size)
+        {
+            file_bin_write_byte(lh5_file, file_bin_read_byte(spm_file))
+        }
+        file_bin_close(lh5_file)
+        
+        //Extract LZH
+        extract_path = filename_path(lh5_path)
+        file_delete(extract_path+extract_name)
+        
+        execute_program("lha.ex_", "x -i -w="+chr(34)+string_copy(extract_path, 1, string_length(extract_path)-1)+chr(34)+" "+chr(34)+lh5_path+chr(34), true)
+        file_delete(lh5_path)
+        
+        if(string_copy(extract_name, string_length(extract_name)-8, string_length(extract_name))!=".mapdata")
+        {
+            extract_real_name = extract_path+filename_change_ext(filename_name(lh5_path), "")+".mapdata"
+            file_delete(extract_real_name)
+            file_rename(extract_path+extract_name, extract_real_name)
+        }
+        
+        if(done_message){wd_message_simple("SPM UnPacking is Complete!")}
+    }
+    else
+    {
+        wd_message_simple("SPM Header Error!")
+    }
+    
+    file_bin_close(spm_file)
+}
+else
+{
+    wd_message_simple("SPM Path Error!")
+}
+</argument>
+      </arguments>
+    </action>
+  </actions>
+</event>

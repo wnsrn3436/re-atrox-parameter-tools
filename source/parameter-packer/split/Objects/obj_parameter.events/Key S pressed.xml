@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<event category="KEYPRESS" id="83">
+  <actions>
+    <action id="605" library="1">
+      <!--action name: Comment-->
+      <kind>NORMAL</kind>
+      <allowRelative>false</allowRelative>
+      <question>false</question>
+      <canApplyTo>false</canApplyTo>
+      <actionType>NONE</actionType>
+      <functionName/>
+      <relative>false</relative>
+      <not>false</not>
+      <appliesTo>.self</appliesTo>
+      <arguments>
+        <argument kind="STRING">Scripting</argument>
+      </arguments>
+    </action>
+    <action id="603" library="1">
+      <!--action name: Code-->
+      <kind>CODE</kind>
+      <allowRelative>false</allowRelative>
+      <question>false</question>
+      <canApplyTo>true</canApplyTo>
+      <actionType>CODE</actionType>
+      <functionName/>
+      <relative>false</relative>
+      <not>false</not>
+      <appliesTo>.self</appliesTo>
+      <arguments>
+        <argument kind="STRING">script_path = get_open_filename("[S] Please select the Script(*.txt) file|*.txt", "")
+if(script_path!="")
+{
+    script_file = file_text_open_read(script_path)
+    while(!file_text_eof(script_file))
+    {
+        script_text = file_text_read_string(script_file); file_text_readln(script_file)
+        if(script_text!="")
+        {
+            done_message = false
+            switch(string_upper(scr_string_strip_at(script_text, "|", 0)))
+            {
+                case "P":
+                    para_path = scr_string_strip_at(script_text, "|", 1)
+                    data_path = scr_string_strip_at(script_text, "|", 2)
+                    find_string = scr_string_strip_at(script_text, "|", 3)
+                    event_user(0)
+                    break
+                case "U":
+                    data_path = scr_string_strip_at(script_text, "|", 1)
+                    find_string = scr_string_strip_at(script_text, "|", 2)
+                    event_user(1)
+                    break
+                default:
+                    wd_message_simple("Invalid command!    'P|[name]_parameter#.txtPATH|mapdataPATH|Player1EngineerName'    'U|mapdataPATH|Player1EngineerName'")
+            }
+        }
+        else
+        {
+            break
+        }
+    }
+    file_text_close(script_file)
+    wd_message_simple("Scripting is Complete!")
+}
+else
+{
+    wd_message_simple("Script Path Error!")
+}
+</argument>
+      </arguments>
+    </action>
+  </actions>
+</event>

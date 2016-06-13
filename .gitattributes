@@ -1,0 +1,24 @@
+# 원본 바이트 보존 (GmkSplitter 트리의 재조립 정확성을 위해 줄바꿈 변환 안 함)
+* -text
+
+*.md            text eol=lf
+.gitignore      text eol=lf
+.gitattributes  text eol=lf
+LICENSE         text eol=lf
+
+*.gmk   binary
+*.gm81  binary
+*.gex   binary
+*.ged   binary
+*.lib   binary
+*.exe   binary
+*.dll   binary
+*.zip   binary
+*.png   binary
+*.jpg   binary
+*.gif   binary
+*.bmp   binary
+*.ico   binary
+*.wav   binary
+*.mp3   binary
+*.mid   binary

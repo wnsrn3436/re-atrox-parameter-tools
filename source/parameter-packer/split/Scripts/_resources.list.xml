@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources>
+  <resource name="file_bin_read_int" type="RESOURCE"/>
+  <resource name="file_bin_write_int" type="RESOURCE"/>
+  <resource name="file_bin_read_short" type="RESOURCE"/>
+  <resource name="file_bin_write_short" type="RESOURCE"/>
+  <resource name="file_bin_read_char" type="RESOURCE"/>
+  <resource name="file_bin_read_string" type="RESOURCE"/>
+  <resource name="file_bin_write_char" type="RESOURCE"/>
+  <resource name="scr_para_read" type="RESOURCE"/>
+  <resource name="scr_string_strip_at" type="RESOURCE"/>
+</resources>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<event category="ALARM" id="0">
+  <actions>
+    <action id="603" library="1">
+      <!--action name: Code-->
+      <kind>CODE</kind>
+      <allowRelative>false</allowRelative>
+      <question>false</question>
+      <canApplyTo>true</canApplyTo>
+      <actionType>CODE</actionType>
+      <functionName/>
+      <relative>false</relative>
+      <not>false</not>
+      <appliesTo>.self</appliesTo>
+      <arguments>
+        <argument kind="STRING">atrox_path = get_open_filename("Application file of the Atrox(*.exe)","atrox.exe")
+if(atrox_path!="")
+{
+    atrox = file_bin_open(atrox_path, 2)
+    
+    file_bin_seek(atrox, 500538)
+    file_bin_write_byte(atrox, 190)
+    file_bin_write_byte(atrox, 4)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 144)
+    
+    file_bin_seek(atrox, 542065)
+    file_bin_write_byte(atrox, 190)
+    file_bin_write_byte(atrox, 4)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    
+    file_bin_seek(atrox, 545997)
+    file_bin_write_byte(atrox, 129)
+    file_bin_write_byte(atrox, 225)
+    file_bin_write_byte(atrox, 255)
+    file_bin_write_byte(atrox, 255)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 190)
+    file_bin_write_byte(atrox, 4)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    
+    file_bin_seek(atrox, 886828)
+    file_bin_write_byte(atrox, 233)
+    file_bin_write_byte(atrox, 49)
+    file_bin_write_byte(atrox, 1)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 144)
+    
+    file_bin_seek(atrox, 889214)
+    file_bin_write_byte(atrox, 233)
+    file_bin_write_byte(atrox, 89)
+    file_bin_write_byte(atrox, 1)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 144)
+    
+    file_bin_seek(atrox, 890742)
+    file_bin_write_byte(atrox, 233)
+    file_bin_write_byte(atrox, 25)
+    file_bin_write_byte(atrox, 1)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 0)
+    file_bin_write_byte(atrox, 144)
+    
+    file_bin_seek(atrox, 893182)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    file_bin_write_byte(atrox, 144)
+    
+    file_bin_close(atrox)
+    wd_message_simple("     Success!     ")
+}
+else
+{
+    wd_message_simple("     Path Error!     ")
+}
+game_end()
+</argument>
+      </arguments>
+    </action>
+  </actions>
+</event>
