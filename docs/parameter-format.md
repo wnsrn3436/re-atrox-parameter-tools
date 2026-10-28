@@ -1,13 +1,13 @@
 # Parameter format
 
-The parameters in the Atrox map editor come in three groups: unit stats, upgrades, and special abilities. They sit one player after another, for eight players, inside the MAPDATA obtained by decompressing the LHA part of a map file ([spm-format.md](spm-format.md)).
+The parameters in the Atrox map editor come in three groups: unit stats, upgrades, and special abilities. The MAPDATA you get by decompressing the LHA part of a map file ([spm-format.md](spm-format.md)) holds them for all eight players, one after another.
 
 All integers are little endian and strings are CP949.
 
 
 ## Position
 
-The structure of the map data before the parameters is left for further investigation. So instead of a fixed offset, Parameter Packer searches for the name string of the Engineer, the first unit of player 1, and takes the position 8 bytes before it as the start. Two 4-byte fields (default settings, default name) come before the name.
+The structure of the map data before the parameters has not been fully worked out yet. So instead of a fixed offset, Parameter Packer searches for the name string of the Engineer, the first unit of player 1, and takes the position 8 bytes before it as the start. This is because two 4-byte fields (default settings, default name) come before the name.
 
 ```gml
 para_pos = file_bin_position(data_file)-string_length(find_string)-8
@@ -55,7 +55,7 @@ The item names are the labels Parameter Packer writes, in Korean, with an Englis
 | `+0xBA` | 4 | 대공히트 (air hits) | Integer |
 | `+0xBE` | 4 | 맵에등장 (appears on map) | Integer |
 
-Default settings set to 1 uses the Atrox default stats, and 0 uses the values written in the map. Default name decides the name the same way. Appears on map set to 1 makes the unit available, and 0 leaves it out.
+Default settings is 1 to use the Atrox default stats and 0 to use the values written in the map. Default name decides the name the same way. Appears on map is 1 if the unit appears and 0 if it does not.
 
 The first unit of player 1 in the map above looks like this.
 
@@ -126,6 +126,6 @@ Parameter Packer writes one file per player, from `<MAPDATA name>_parameter1.txt
 ...
 ```
 
-Every 4-byte value is read and written as an integer, so the two float slots of the special abilities come out as integers with the same bits. 30.0 is `1106247680` and 0.7 is `1060320051`. When editing, a float has to be converted to an integer the same way.
+Every 4-byte value is read and written as an integer, so the two float slots of the special abilities come out as integers with the same bits. 30.0 is `1106247680` and 0.7 is `1060320051`. When you edit them, you also have to convert floats to integers the same way.
 
-When putting the values back, each line's value is what follows the first space with the leading spaces removed. So labels must not contain spaces, while spaces inside the name value are kept. Upgrade and special ability lines have every run of four spaces turned into one and are then split on single spaces.
+When the values are put back, the value on each line is whatever follows the first space, minus any leading spaces. So labels must not contain spaces, while spaces inside the name value are kept. In upgrade and special ability lines, each run of four spaces is replaced with one space and the line is then split on single spaces.

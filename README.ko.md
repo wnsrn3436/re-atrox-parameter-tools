@@ -1,14 +1,16 @@
 # 아트록스 파라미터 도구
 
-아트록스(조이맥스) 맵에 저장된 파라미터(유닛 능력치, 업그레이드, 특수능력)를 텍스트로 꺼내 고치고, 고친 값을 일반 게임에서 쓰게 하는 도구 세 개다.
+[English](README.md)
+
+아트록스(조이맥스) 맵에 저장된 파라미터(유닛 능력치, 업그레이드, 특수능력)를 텍스트로 꺼내 고치고 그 값을 일반 게임에서 쓰게 하는 도구 세 개다.
 
 | 도구 | 하는 일 |
 |---|---|
-| SPM Packer | 맵 파일(`.spm`) 안의 LHA 압축된 맵 데이터를 `.mapdata` 파일로 꺼내고, 고친 것을 다시 넣는다 |
-| Parameter Packer | `.mapdata` 의 파라미터를 플레이어별 txt 여덟 개로 꺼내고, 고친 txt 를 다시 넣는다 |
-| Parameter Patch | 게임 실행파일을 고쳐 일반 게임에서도 맵의 파라미터와 유닛 배치를 읽게 한다 |
+| SPM Packer | 맵 파일(`.spm`) 안의 LHA 압축된 맵 데이터를 `.mapdata` 파일로 꺼내고 고친 것을 다시 넣는다 |
+| Parameter Packer | `.mapdata` 의 파라미터를 플레이어별 txt 여덟 개로 꺼내고 값을 바꾼 txt 를 다시 넣는다 |
+| Parameter Patch | 게임 실행파일을 패치해 일반 게임에서도 맵의 파라미터와 유닛 배치를 읽게 한다 |
 
-맵 파일 구조는 [docs/spm-format.ko.md](docs/spm-format.ko.md), 파라미터 구조는 [docs/parameter-format.ko.md](docs/parameter-format.ko.md), Parameter Patch 가 고치는 바이트는 [docs/parameter-patch.ko.md](docs/parameter-patch.ko.md) 에 있다.
+맵 파일 구조는 [docs/spm-format.ko.md](docs/spm-format.ko.md), 파라미터 구조는 [docs/parameter-format.ko.md](docs/parameter-format.ko.md), Parameter Patch 가 덮어쓰는 바이트는 [docs/parameter-patch.ko.md](docs/parameter-patch.ko.md) 에 있다.
 
 **호환 버전**: 아트록스 v1.10 빌드 1
 
@@ -55,7 +57,7 @@ U|C:\maps\mymap.mapdata|엔지니어
 P|C:\maps\mymap_parameter1.txt|C:\maps\mymap.mapdata|엔지니어
 ```
 
-엔지니어 이름은 파라미터 위치를 찾는 기준이라, 맵에서 이름을 바꿨다면 바꾼 이름을 넣는다. 넣을 때는 txt 여덟 개가 모두 있어야 한다. 모든 플레이어에 같은 값을 주려면 하나를 고친 뒤 복사해 번호만 바꾸면 된다.
+엔지니어 이름은 파라미터 위치를 찾는 기준이라 맵에서 이름을 바꿨다면 바꾼 이름을 넣는다. 넣을 때는 txt 여덟 개가 모두 있어야 한다. 모든 플레이어에 같은 값을 주려면 하나를 고친 뒤 복사해 번호만 바꾸면 된다.
 
 맵 에디터에서 다시 열어 저장해도 값이 아트록스 기본값으로 돌아가지 않게 하려면 각 항목의 기본설정을 0 으로 둔다. 옛 맵 에디터로 만든 맵은 먼저 맵 에디터의 설정 > 파라미터 화면에서 확인을 눌러 저장한 뒤 쓴다. 특수능력의 유효 시간과 단계 적용 시간은 float 를 비트 그대로 정수로 적은 값이다(30.0 이면 `1106247680`).
 
@@ -63,14 +65,14 @@ P|C:\maps\mymap_parameter1.txt|C:\maps\mymap.mapdata|엔지니어
 
 **3. 게임에 적용하기 (Parameter Patch)**
 
-실행하면 파일 선택창이 뜬다. UPX 를 푼 `atrox.exe` 를 고르면 그 자리에서 고치고 `Success!` 를 띄운다. 백업 없이 바로 고치므로 미리 복사해 둔다. 정품 `atrox.exe` 는 UPX 로 압축되어 있어서 `upx -d` 로 푼 파일에 써야 한다.
+실행하면 파일 선택창이 뜬다. UPX 를 푼 `atrox.exe` 를 고르면 그 자리에서 패치하고 `Success!` 를 띄운다. 백업 없이 바로 고치므로 미리 복사해 둔다. 정품 `atrox.exe` 는 UPX 로 압축되어 있어서 `upx -d` 로 푼 파일에 써야 한다.
 
 패치한 게임은 방에서 어떤 게임 방식을 고르든 맵의 파라미터와 유닛 배치를 읽는 일반 게임으로 진행한다. 게임에 딸린 시나리오 맵은 패치하지 않은 실행파일로 연다. 멀티플레이는 모두가 같은 맵과 패치한 실행파일을 써야 한다.
 
 
 ## 구현 원리
 
-**SPM Packer 는 헤더를 건너뛰고 LHA 부분만 다룬다.** 맵 파일은 1130바이트 고정 헤더 뒤에 승리 조건, 패배 조건, 브리핑 문자열이 길이와 함께 이어지고, 그다음부터 파일 끝까지가 `-lh5-` 방식 LHA 아카이브다. 문자열 길이를 따라 읽어 아카이브 시작을 찾고, 꺼낼 때는 그 뒤를 `.lzh` 로 떼어 `lha.ex_ x` 로 푼다. 넣을 때는 `lha.ex_ a -1` 로 새로 압축해 원래 맵의 아카이브 앞부분까지에 이어 붙인다.
+**SPM Packer 는 헤더를 건너뛰고 LHA 부분만 다룬다.** 맵 파일은 1130바이트 고정 헤더 뒤에 승리 조건, 패배 조건, 브리핑 문자열이 길이와 함께 이어지고 그다음부터 파일 끝까지가 `-lh5-` 방식 LHA 아카이브다. 문자열 길이를 따라 읽어 아카이브 시작을 찾고 꺼낼 때는 그 뒤를 `.lzh` 로 떼어 `lha.ex_ x` 로 푼다. 넣을 때는 `lha.ex_ a -1` 로 새로 압축해 원래 맵에서 아카이브 앞까지 남긴 부분 뒤에 이어 붙인다.
 
 ```gml
 lh5_start = file_bin_position(spm_file)
@@ -82,9 +84,9 @@ if(lh5=="-lh5-")
     execute_program("lha.ex_", "x -i -w="+chr(34)+string_copy(extract_path, 1, string_length(extract_path)-1)+chr(34)+" "+chr(34)+lh5_path+chr(34), true)
 ```
 
-**Parameter Packer 는 엔지니어 이름으로 위치를 찾는다.** 파라미터 앞의 맵 데이터 구조를 풀지 않고, MAPDATA 를 처음부터 한 바이트씩 읽으며 플레이어 1 엔지니어의 이름을 찾고 그 8바이트 앞을 시작으로 삼는다. 그 뒤는 플레이어마다 유닛 123개(0xC2바이트씩), 업그레이드 58개(0x20바이트씩), 특수능력 32개(0x24바이트씩)가 고정 크기로 이어지므로, 정해진 순서대로 정수, 짧은 정수, 고정 길이 문자열을 읽어 txt 로 쓰고 같은 순서로 다시 쓴다.
+**Parameter Packer 는 엔지니어 이름으로 위치를 찾는다.** 파라미터 앞의 맵 데이터 구조를 풀지 않고 MAPDATA 를 처음부터 한 바이트씩 읽으며 플레이어 1 엔지니어의 이름을 찾고 그 8바이트 앞을 시작으로 삼는다. 그 뒤는 플레이어마다 유닛 123개(0xC2바이트씩), 업그레이드 58개(0x20바이트씩), 특수능력 32개(0x24바이트씩)가 고정 크기로 이어지므로, 정해진 순서대로 정수, 짧은 정수, 고정 길이 문자열을 읽어 txt 로 쓰고 같은 순서로 다시 쓴다.
 
-**Parameter Patch 는 실행파일 일곱 군데를 덮어쓴다.** 게임 방식을 정하는 세 자리를 `mov esi, 4` 로 바꿔 늘 유즈맵 방식 값(4)이 들어가게 하고, 이 방식에서 갈라지던 플레이어 설정 블록은 건너뛰고 시작 건물 블록은 돌게 했다. `atrox.pak` 안의 맵을 임시 파일로 꺼내 여는 블록 두 개도 늘 건너뛴다. 오프셋과 바이트는 소스에 10진수로 들어 있다.
+**Parameter Patch 는 실행파일 일곱 군데를 덮어쓴다.** 게임 방식을 정하는 세 자리를 `mov esi, 4` 로 바꿔 늘 유즈맵 방식 값(4)이 들어가게 하고, 이 방식에서 갈라지던 플레이어 설정 블록은 건너뛰고 시작 건물 블록은 돌게 한다. `atrox.pak` 안의 맵을 임시 파일로 꺼내 여는 블록 두 개도 늘 건너뛴다. 오프셋과 바이트는 소스에 10진수로 들어 있다.
 
 ```gml
 file_bin_seek(atrox, 500538)
@@ -116,7 +118,7 @@ file_bin_write_byte(atrox, 144)
 
 ## 크레딧
 
-- SPM Packer 가 부르는 `lha.ex_` 는 GnuWin32 판 LHa 1.14i 의 `lha.exe` 다. LHa for UNIX 는 Masaru Oki 가 만들고 Nobutaka Watazaki, Tsugio Okamoto 가 고쳤으며, Koji Arai 가 autoconf 판으로 정리했다. LHa 라이선스는 소스 없이 실행파일만 배포하는 것을 허용하지 않으므로 GnuWin32 에서 직접 받아 쓴다.
+- SPM Packer 가 부르는 `lha.ex_` 는 GnuWin32 판 LHa 1.14i 의 `lha.exe` 다. LHa for UNIX 는 Masaru Oki 가 만들고 Nobutaka Watazaki, Tsugio Okamoto 가 고쳤으며 Koji Arai 가 autoconf 판으로 정리했다. LHa 라이선스는 소스 없이 실행파일만 배포하는 것을 허용하지 않으므로 GnuWin32 에서 직접 받아 쓴다.
 - 메시지 창에 쓰는 GM Windows Dialogs 확장은 Mark Overmars 가 만들어 게임메이커 8 과 함께 배포한 것이다.
 
 

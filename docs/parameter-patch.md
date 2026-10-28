@@ -1,8 +1,8 @@
 # Bytes changed by Parameter Patch
 
-Atrox Parameter Patch overwrites seven spots in the chosen executable. It forces the game type value to 4, adjusts two branches that split on type 4 and two blocks that open maps inside `atrox.pak`, and so makes a normal game read the parameters and unit placement of the map file.
+Atrox Parameter Patch overwrites seven spots in the chosen executable. It always sets the game type value to 4 and modifies two branches that split on type 4 and two blocks that open maps inside `atrox.pak`, so a normal game also reads the map file's parameters and unit placement.
 
-The bytes are in `source/parameter-patch/split/Objects/obj_patch.events/Alarm 0.xml` in decimal.
+The bytes are written in decimal in `source/parameter-patch/split/Objects/obj_patch.events/Alarm 0.xml`.
 
 ```gml
 file_bin_seek(atrox, 500538)
@@ -24,7 +24,7 @@ file_bin_write_byte(atrox, 144)
 | File | UPX-unpacked `atrox.exe` (2,965,504 bytes) |
 | md5 | `b4c64c06c2afd830995ef497478718be` |
 
-The retail `atrox.exe` (md5 `01d0c56a04f61ffa40d219eb0378154c`) is packed with UPX and is smaller than these offsets. The patch has to be applied to the file unpacked with `upx -d`.
+The retail `atrox.exe` (md5 `01d0c56a04f61ffa40d219eb0378154c`) is packed with UPX and is smaller than these offsets. The patch must be applied to the file unpacked with `upx -d`.
 
 The image base is `0x400000`, and every change is inside the `.text` section (virtual address `0x401000`, file offset `0x1000`). So **file offset = virtual address - 0x400000**.
 
@@ -44,7 +44,7 @@ The image base is `0x400000`, and every change is inside the `.text` section (vi
 
 ## Setting the game type to 4
 
-The game type is stored at `+0x108` of the global object `0x00B1E4C0` returned by `0x004078AB`. The patch changes the three spots that load a value with `mov esi, ...` and then write it with `mov [eax+0x108], esi`. The load was replaced with `mov esi, 4`, so 4 goes in whichever type is chosen. Other code such as `0x004D9177` and `0x004DA0FE` below compares `[eax+0x108]` with 4 and branches, and 4 looks like the value of the use map type, which reads the parameters and unit placement of the map.
+The game type is stored at `+0x108` of the global object `0x00B1E4C0` returned by `0x004078AB`. The patch changes the three spots that load a value with `mov esi, ...` and then write it with `mov [eax+0x108], esi`. The load was replaced with `mov esi, 4`, so the value is 4 no matter which type is chosen. Other code, such as `0x004D9177` and `0x004DA0FE` below, compares `[eax+0x108]` with 4 and branches on the result. The value 4 appears to be the use map type, which reads the map's parameters and unit placement.
 
 ```
 ; 0x0047A33A
@@ -71,12 +71,12 @@ The game type is stored at `+0x108` of the global object `0x00B1E4C0` returned b
 004854E8  89 B0 08 01 00 00     mov  [eax+0x108], esi
 ```
 
-The third spot has an `and` on `ecx` in the middle, so that instruction was moved up and `mov esi, 4` placed after it.
+At the third spot an `and` on `ecx` sits in between, so that instruction was moved up and `mov esi, 4` was placed after it.
 
 
 ## Skipping the pak map block
 
-`0x004D882C` and `0x004D9776` sit in two functions of the same shape. When a value on the stack is nonzero, they build a `Maps\%s` path with `wsprintfA`, read that map from the game data object (`0x00C70720`), copy it into a temporary file made with `GetTempPathA` / `GetTempFileNameA` (or `C:\Dump.tmp` if that fails), and open it. This looks like the path that opens maps inside the bundled `atrox.pak`. The conditional jump was turned into an unconditional one, so the code always takes the next path (the one that opens the map file directly).
+`0x004D882C` and `0x004D9776` are in two functions with the same structure, one in each. When a value on the stack is nonzero, they build a `Maps\%s` path with `wsprintfA`, read that map from the game data object (`0x00C70720`), copy it into a temporary file made with `GetTempPathA` / `GetTempFileNameA` (or `C:\Dump.tmp` if that fails), and open it. This looks like the path that opens maps inside the bundled `atrox.pak`. The conditional jump was turned into an unconditional one, so the code always takes the next path (the one that opens the map file directly).
 
 ```
 004D881E  8B 84 24 54 2E 00 00  mov  eax, [esp+0x2E54]
@@ -97,7 +97,7 @@ The third spot has an `and` on `ecx` in the middle, so that instruction was move
 
 ## Skipping the type 4 player setup
 
-Just before `0x004D917E`, 96 bytes (12 bytes x 8 players) are read from the map file with `ReadFile`, and only when the game type is 4 are they used to fill fields of the eight players (`+0x110`, `+0x634`, `+0x638`, `+0x63C`). After the patch the type is always 4, so the `JNZ` became a `JMP` that always skips this block.
+Just before `0x004D917E`, the code reads 96 bytes (12 bytes x 8 players) from the map file with `ReadFile` and uses them to fill fields of the eight players (`+0x110`, `+0x634`, `+0x638`, `+0x63C`) only when the game type is 4. After the patch the type is always 4, so the `JNZ` became a `JMP` that always skips this block.
 
 ```
 004D9168  6A 60                 push 0x60               ; 96 bytes
@@ -130,11 +130,11 @@ The compare and conditional jump at `0x004DA0FE` skip the following block when t
 004DA144  8B 94 84 AC 00 00 00  mov  edx, [esp+eax*4+0xAC]
 ```
 
-What the three blocks actually create and read (the meaning of each field, the building type numbers) is left for further investigation.
+What the three blocks actually create and read (the meaning of each field, the building type numbers) still needs to be confirmed.
 
 
 ## Behavior after the patch
 
 - Whatever game type is chosen in the room, the game runs as type 4, so types such as fusion and survival (퓨전, 서바이벌) play like a normal game.
-- The block that opens maps inside `atrox.pak` is skipped, so maps are used as `.spm` files in the maps folder. The scenario maps that come with the game are opened with an unpatched executable.
+- The block that opens maps inside `atrox.pak` is skipped, so the game uses the `.spm` files in the map folder. Use an unpatched executable to open the scenario maps that come with the game.
 - The server and clients must use the same map and the same patch.
